@@ -1,0 +1,30 @@
+# API Keys — NEVER push your keys to GitHub
+utils/storage.js
+
+# Node/npm (if you ever add build tools)
+node_modules/
+npm-debug.log*
+package-lock.json
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor folders
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Build outputs (not needed for extension)
+dist/
+build/
+*.zip
+*.crx
+*.xpi
+
+# Temp files
+*.tmp
+*.log
+~*

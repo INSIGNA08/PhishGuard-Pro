@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>⚠️ PhishGuard: Danger Blocked</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: #0a0e17;
+      color: #e2e8f0;
+      font-family: 'Syne', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      max-width: 560px;
+      width: 100%;
+      background: #111827;
+      border: 1px solid #7f1d1d;
+      border-radius: 16px;
+      padding: 48px 40px;
+      text-align: center;
+      box-shadow: 0 0 60px rgba(239,68,68,0.15);
+    }
+    .icon { font-size: 64px; margin-bottom: 20px; }
+    h1 {
+      font-size: 28px;
+      font-weight: 800;
+      color: #ef4444;
+      margin-bottom: 12px;
+    }
+    .score-pill {
+      display: inline-block;
+      background: rgba(239,68,68,0.15);
+      border: 1px solid #ef4444;
+      border-radius: 20px;
+      padding: 4px 16px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 14px;
+      color: #ef4444;
+      margin-bottom: 20px;
+    }
+    p {
+      color: #94a3b8;
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 10px;
+    }
+    .url-box {
+      background: #0a0e17;
+      border: 1px solid #1f2d45;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin: 20px 0;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      color: #64748b;
+      word-break: break-all;
+    }
+    .btns { display: flex; gap: 12px; margin-top: 28px; justify-content: center; }
+    .btn {
+      padding: 12px 28px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'Syne', sans-serif;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .btn-back {
+      background: linear-gradient(135deg, #0ea5e9, #6366f1);
+      border: none;
+      color: white;
+    }
+    .btn-back:hover { opacity: 0.9; }
+    .btn-proceed {
+      background: transparent;
+      border: 1px solid #ef4444;
+      color: #ef4444;
+    }
+    .btn-proceed:hover { background: rgba(239,68,68,0.1); }
+    small { display:block; color:#4b5563; font-size:11px; margin-top:16px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">🚨</div>
+    <h1>Phishing Site Blocked</h1>
+    <div class="score-pill" id="scorePill">Risk Score: --/100</div>
+    <p>PhishGuard Pro has blocked this page because it was identified as a <strong style="color:#ef4444">phishing website</strong> designed to steal your personal information.</p>
+    <p>Do not enter any passwords, credit card numbers, or personal details.</p>
+    <div class="url-box" id="urlBox">Loading...</div>
+    <div class="btns">
+      <button class="btn btn-back" onclick="history.back()">← Go Back to Safety</button>
+      <button class="btn btn-proceed" id="proceedBtn">Proceed Anyway</button>
+    </div>
+    <small>You can disable auto-blocking in PhishGuard settings.</small>
+  </div>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const url    = decodeURIComponent(params.get("url") || "");
+    const score  = params.get("score") || "?";
+    document.getElementById("scorePill").textContent = `Risk Score: ${score}/100`;
+    document.getElementById("urlBox").textContent    = url || "Unknown URL";
+    document.getElementById("proceedBtn").addEventListener("click", () => {
+      if (confirm("This site was flagged as phishing. Are you sure you want to proceed?")) {
+        window.location.href = url;
+      }
+    });
+  </script>
+</body>
+</html>

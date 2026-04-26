@@ -1,0 +1,62 @@
+{
+  "manifest_version": 2,
+  "name": "PhishGuard Pro",
+  "version": "2.1.0",
+  "description": "7-Layer phishing detector: ML scoring, threat feeds, redirect analysis, network monitoring",
+  "author": "PhishGuard",
+
+  "icons": {
+    "48": "icons/icon48.png",
+    "96": "icons/icon96.png"
+  },
+
+  "browser_action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": { "48": "icons/icon48.png" },
+    "default_title": "PhishGuard Pro"
+  },
+
+  "background": {
+    "scripts": [
+      "utils/constants.js",
+      "utils/storage.js",
+      "data/topDomains.js",
+      "data/suspiciousTLDs.js",
+      "data/safeDomains.js",
+      "background/urlAnalyzer.js",
+      "background/domainIntel.js",
+      "background/apiChecker.js",
+      "background/threatFeeds.js",
+      "background/redirectChecker.js",
+      "background/networkMonitor.js",
+      "background/mlScorer.js",
+      "background/scorer.js",
+      "background/background.js"
+    ]
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content/contentScript.js"],
+      "run_at": "document_idle"
+    }
+  ],
+
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "storage",
+    "webNavigation",
+    "webRequest",
+    "notifications",
+    "<all_urls>"
+  ],
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "phishguard@youremail.com",
+      "strict_min_version": "91.0"
+    }
+  }
+}

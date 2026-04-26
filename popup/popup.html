@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PhishGuard Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:        #0a0e17;
+      --surface:   #111827;
+      --border:    #1f2d45;
+      --text:      #e2e8f0;
+      --muted:     #64748b;
+      --safe:      #22c55e;
+      --warn:      #f59e0b;
+      --danger:    #ef4444;
+      --accent:    #38bdf8;
+      --mono:      'Share Tech Mono', monospace;
+      --sans:      'Syne', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 380px;
+      min-height: 500px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      overflow: hidden;
+    }
+
+    /* ── Header ──────────────────────────────────── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(135deg, #0f172a 0%, #0a0e17 100%);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, #0ea5e9, #6366f1);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+
+    .logo-text {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: #fff;
+    }
+
+    .logo-text span { color: var(--accent); }
+
+    .header-actions { display: flex; gap: 6px; }
+
+    .icon-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      width: 30px; height: 30px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── Tabs ────────────────────────────────────── */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .tab {
+      flex: 1;
+      padding: 10px 0;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .tab:hover:not(.active) { color: var(--text); }
+
+    /* ── Tab Panels ──────────────────────────────── */
+    .panel { display: none; padding: 16px; }
+    .panel.active { display: block; }
+
+    /* ── Score Gauge ─────────────────────────────── */
+    .gauge-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 8px 0 16px;
+    }
+
+    .gauge-svg-wrap { position: relative; width: 160px; height: 100px; }
+
+    .gauge-svg { width: 160px; height: 100px; }
+
+    .gauge-score {
+      position: absolute;
+      bottom: 0; left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      line-height: 1.1;
+    }
+    .gauge-score .num {
+      font-size: 34px;
+      font-weight: 800;
+      font-family: var(--mono);
+      transition: color 0.4s;
+    }
+    .gauge-score .lbl {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .verdict-badge {
+      margin-top: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border: 1px solid currentColor;
+      transition: all 0.3s;
+    }
+
+    .verdict-badge.safe    { color: var(--safe);   background: rgba(34,197,94,0.1); }
+    .verdict-badge.warn    { color: var(--warn);   background: rgba(245,158,11,0.1); }
+    .verdict-badge.danger  { color: var(--danger); background: rgba(239,68,68,0.1); }
+    .verdict-badge.scanning{ color: var(--accent); background: rgba(56,189,248,0.1); }
+
+    .verdict-message {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.5;
+      padding: 0 10px;
+    }
+
+    /* ── URL Bar ─────────────────────────────────── */
+    .url-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .url-bar .url-icon { font-size: 13px; flex-shrink: 0; }
+
+    .url-bar .url-text {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+    }
+
+    .url-bar .rescan-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.15s;
+      font-family: var(--sans);
+    }
+    .url-bar .rescan-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── Layer Breakdown ─────────────────────────── */
+    .section-title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .layer-grid { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+
+    .layer-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 12px;
+    }
+
+    .layer-icon { font-size: 15px; flex-shrink: 0; }
+
+    .layer-info { flex: 1; min-width: 0; }
+    .layer-name { font-size: 12px; font-weight: 600; }
+    .layer-desc { font-size: 10px; color: var(--muted); }
+
+    .layer-score {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .layer-bar-wrap {
+      width: 60px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .layer-bar {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.6s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    /* ── Findings ────────────────────────────────── */
+    .findings-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .finding-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--muted);
+      padding: 5px 8px;
+      background: var(--surface);
+      border-radius: 6px;
+      border-left: 2px solid var(--border);
+      line-height: 1.4;
+    }
+    .finding-item.high  { border-left-color: var(--danger); color: #fca5a5; }
+    .finding-item.med   { border-left-color: var(--warn);   color: #fcd34d; }
+    .finding-item .fi-dot { flex-shrink: 0; margin-top: 2px; }
+
+    /* ── Action Buttons ──────────────────────────── */
+    .actions { display: flex; gap: 8px; margin-top: 14px; }
+
+    .btn {
+      flex: 1;
+      padding: 9px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      border: 1px solid;
+      transition: all 0.15s;
+      font-family: var(--sans);
+      text-align: center;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--muted);
+    }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+    .btn-danger {
+      background: rgba(239,68,68,0.1);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+    .btn-danger:hover { background: rgba(239,68,68,0.2); }
+
+    /* ── History Panel ───────────────────────────── */
+    .history-list { display: flex; flex-direction: column; gap: 6px; }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .history-item:hover { border-color: var(--accent); }
+
+    .h-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .h-url {
+      flex: 1;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .h-score {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .h-time { font-size: 9px; color: var(--muted); flex-shrink: 0; }
+
+    /* ── Settings Panel ──────────────────────────── */
+    .settings-section { margin-bottom: 16px; }
+
+    .settings-section .section-title { margin-bottom: 10px; }
+
+    .api-field {
+      margin-bottom: 8px;
+    }
+    .api-field label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .api-field label a {
+      color: var(--accent);
+      font-size: 10px;
+      text-decoration: none;
+    }
+    .api-field input {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 10px;
+      font-size: 11px;
+      font-family: var(--mono);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .api-field input:focus { border-color: var(--accent); }
+    .api-field input::placeholder { color: var(--muted); }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .toggle-row:last-child { border-bottom: none; }
+
+    .toggle-label {
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .toggle-sub {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .toggle {
+      position: relative;
+      width: 36px; height: 20px;
+      flex-shrink: 0;
+    }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: var(--border);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .toggle-slider::before {
+      content: "";
+      position: absolute;
+      width: 14px; height: 14px;
+      left: 3px; bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.2s;
+    }
+    .toggle input:checked + .toggle-slider { background: var(--accent); }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(16px); }
+
+    .save-btn {
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(135deg, #0ea5e9, #6366f1);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      font-family: var(--sans);
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: opacity 0.15s;
+      margin-top: 12px;
+    }
+    .save-btn:hover { opacity: 0.9; }
+
+    /* ── Scanning animation ──────────────────────── */
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .scanning { animation: pulse 1.2s ease-in-out infinite; }
+
+    /* ── Scrollbar ───────────────────────────────── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    /* ── No data state ───────────────────────────── */
+    .empty-state {
+      text-align: center;
+      padding: 30px 20px;
+      color: var(--muted);
+    }
+    .empty-state .es-icon { font-size: 36px; margin-bottom: 10px; }
+    .empty-state p { font-size: 12px; line-height: 1.6; }
+
+    .from-cache {
+      font-size: 9px;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 6px;
+      font-family: var(--mono);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">
+      <div class="logo-icon">🛡️</div>
+      <div class="logo-text">Phish<span>Guard</span> Pro</div>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="btnHistory" title="History">📋</button>
+      <button class="icon-btn" id="btnSettings" title="Settings">⚙️</button>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" data-tab="scan">Scan</div>
+    <div class="tab" data-tab="details">Details</div>
+    <div class="tab" data-tab="history">History</div>
+    <div class="tab" data-tab="settings">Settings</div>
+  </div>
+
+  <!-- ── SCAN TAB ─────────────────────────────────────── -->
+  <div class="panel active" id="tab-scan">
+
+    <!-- URL bar -->
+    <div class="url-bar">
+      <span class="url-icon" id="urlIcon">🔗</span>
+      <span class="url-text" id="urlText">Loading...</span>
+      <button class="rescan-btn" id="rescanBtn">↻ Rescan</button>
+    </div>
+
+    <!-- Gauge -->
+    <div class="gauge-wrap">
+      <div class="gauge-svg-wrap">
+        <svg class="gauge-svg" viewBox="0 0 160 100">
+          <!-- Background arc -->
+          <path d="M 16 88 A 64 64 0 0 1 144 88" fill="none" stroke="#1f2d45" stroke-width="10" stroke-linecap="round"/>
+          <!-- Colored arc (dynamic) -->
+          <path id="gaugeArc" d="M 16 88 A 64 64 0 0 1 144 88" fill="none" stroke="#22c55e" stroke-width="10" stroke-linecap="round"
+                stroke-dasharray="201" stroke-dashoffset="201" style="transition: stroke-dashoffset 0.8s cubic-bezier(0.34,1.56,0.64,1), stroke 0.4s;"/>
+        </svg>
+        <div class="gauge-score">
+          <div class="num" id="scoreNum" style="color:#22c55e">--</div>
+          <div class="lbl">Risk Score</div>
+        </div>
+      </div>
+      <div class="verdict-badge scanning" id="verdictBadge">
+        <span id="verdictIcon">⟳</span>
+        <span id="verdictText">Scanning...</span>
+      </div>
+      <p class="verdict-message" id="verdictMessage">Analyzing this page for threats...</p>
+    </div>
+
+    <!-- Layer scores -->
+    <div class="section-title">Analysis Layers</div>
+    <div class="layer-grid" id="layerGrid">
+      <div class="layer-row">
+        <span class="layer-icon">🔗</span>
+        <div class="layer-info">
+          <div class="layer-name">URL Analysis</div>
+          <div class="layer-desc">Heuristics & structure</div>
+        </div>
+        <div class="layer-bar-wrap"><div class="layer-bar" id="bar-url" style="width:0%"></div></div>
+        <div class="layer-score" id="score-url">--</div>
+      </div>
+      <div class="layer-row">
+        <span class="layer-icon">🌐</span>
+        <div class="layer-info">
+          <div class="layer-name">Domain Intel</div>
+          <div class="layer-desc">WHOIS · DNS · SSL</div>
+        </div>
+        <div class="layer-bar-wrap"><div class="layer-bar" id="bar-domain" style="width:0%"></div></div>
+        <div class="layer-score" id="score-domain">--</div>
+      </div>
+      <div class="layer-row">
+        <span class="layer-icon">📄</span>
+        <div class="layer-info">
+          <div class="layer-name">DOM Analysis</div>
+          <div class="layer-desc">Page content & forms</div>
+        </div>
+        <div class="layer-bar-wrap"><div class="layer-bar" id="bar-dom" style="width:0%"></div></div>
+        <div class="layer-score" id="score-dom">--</div>
+      </div>
+      <div class="layer-row">
+        <span class="layer-icon">☁️</span>
+        <div class="layer-info">
+          <div class="layer-name">API Reputation</div>
+          <div class="layer-desc">Safe Browsing · PhishTank</div>
+        </div>
+        <div class="layer-bar-wrap"><div class="layer-bar" id="bar-api" style="width:0%"></div></div>
+        <div class="layer-score" id="score-api">--</div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button class="btn btn-outline" id="whitelistBtn">✓ Trust Site</button>
+      <button class="btn btn-outline" id="reportBtn">⚑ Report</button>
+    </div>
+
+    <div class="from-cache" id="cacheLabel"></div>
+  </div>
+
+  <!-- ── DETAILS TAB ───────────────────────────────────── -->
+  <div class="panel" id="tab-details">
+    <div class="section-title">Threat Findings</div>
+    <div class="findings-list" id="findingsList">
+      <div class="empty-state">
+        <div class="es-icon">🔍</div>
+        <p>Scan a page first to see detailed findings.</p>
+      </div>
+    </div>
+
+    <div style="margin-top:16px">
+      <div class="section-title">Domain Information</div>
+      <div id="domainInfo" style="font-size:11px; color:var(--muted); line-height:2; font-family:var(--mono);">
+        —
+      </div>
+    </div>
+  </div>
+
+  <!-- ── HISTORY TAB ───────────────────────────────────── -->
+  <div class="panel" id="tab-history">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div class="section-title" style="margin:0">Recent Scans</div>
+      <button class="btn btn-outline" id="clearHistoryBtn" style="flex:none;padding:4px 10px;font-size:10px">Clear</button>
+    </div>
+    <div class="history-list" id="historyList">
+      <div class="empty-state">
+        <div class="es-icon">📋</div>
+        <p>No scan history yet.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SETTINGS TAB ─────────────────────────────────── -->
+  <div class="panel" id="tab-settings">
+
+    <div class="settings-section">
+      <div class="section-title">API Keys (Free)</div>
+
+      <div class="api-field">
+        <label>
+          Google Safe Browsing
+          <a href="https://console.cloud.google.com" target="_blank">Get Key →</a>
+        </label>
+        <input type="password" id="key-gsb" placeholder="AIza..." />
+      </div>
+
+      <div class="api-field">
+        <label>
+          PhishTank
+          <a href="https://phishtank.com/api_info.php" target="_blank">Get Key →</a>
+        </label>
+        <input type="password" id="key-pt" placeholder="Your app key..." />
+      </div>
+
+      <div class="api-field">
+        <label>
+          URLScan.io
+          <a href="https://urlscan.io/user/profile" target="_blank">Get Key →</a>
+        </label>
+        <input type="password" id="key-us" placeholder="Your API key..." />
+      </div>
+
+      <div class="api-field">
+        <label>
+          IPQualityScore
+          <a href="https://ipqualityscore.com" target="_blank">Get Key →</a>
+        </label>
+        <input type="password" id="key-ipqs" placeholder="Your private key..." />
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="section-title">Preferences</div>
+
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">Show Badge</div>
+          <div class="toggle-sub">Display risk indicator on icon</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="pref-badge" checked><span class="toggle-slider"></span></label>
+      </div>
+
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">Phishing Notifications</div>
+          <div class="toggle-sub">Alert when threat detected</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="pref-notify" checked><span class="toggle-slider"></span></label>
+      </div>
+
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">DOM Analysis</div>
+          <div class="toggle-sub">Scan page content & forms</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="pref-dom" checked><span class="toggle-slider"></span></label>
+      </div>
+
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">Auto-Block Phishing</div>
+          <div class="toggle-sub">Redirect phishing pages to warning</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="pref-block"><span class="toggle-slider"></span></label>
+      </div>
+
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">External API Calls</div>
+          <div class="toggle-sub">Use reputation APIs (requires keys)</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="pref-api" checked><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+
+    <button class="save-btn" id="saveSettingsBtn">💾 Save Settings</button>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
