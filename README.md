@@ -206,8 +206,6 @@ For permanent install → submit to [Firefox Add-on Store](https://addons.mozill
 
 ---
 
-## 🎓 For Your BCA Project Report
-
 **Technologies Used:**
 - **JavaScript (ES6+)** — Extension logic
 - **WebExtensions API** — Firefox extension framework
