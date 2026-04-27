@@ -6,12 +6,11 @@
 
 ## ⚡ Quick Setup After Downloading
 
-1. Copy `utils/storage.template.js` → rename to `utils/storage.js`
-2. Open `utils/storage.js` → replace `YOUR_GOOGLE_SAFE_BROWSING_KEY_HERE` with your free API key
+1. Open `utils/storage.js` → replace `YOUR_GOOGLE_SAFE_BROWSING_KEY_HERE` with your free API key
    - Get key at: console.cloud.google.com → Enable Safe Browsing API → Credentials
-3. Open Firefox → go to `about:debugging` → This Firefox → Load Temporary Add-on
-4. Select `manifest.json` from the PhishGuard folder
-5. Done ✅
+2. Open Firefox → go to `about:debugging` → This Firefox → Load Temporary Add-on
+3. Select `manifest.json` from the PhishGuard folder
+4. Done ✅
 
 ---
 
